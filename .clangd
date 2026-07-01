@@ -1,2 +1,17 @@
 CompileFlags:
-  Add: [-std=c++17, -Wall, -Wextra, -Wpedantic, -Iinclude]
+  Add: [-std=c++17, -Wall, -Wextra, -Wpedantic]
+  CompilationDatabase: build
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+Index:
+  Background: Build
+  StandardLibrary: Yes
+
+Hover:
+  ShowAKA: Yes
+
+Completion:
+  AllScopes: Yes
