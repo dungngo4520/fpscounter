@@ -34,9 +34,13 @@ CheckOptions:
   readability-identifier-naming.FunctionCase: "CamelCase"
   readability-identifier-naming.ParameterCase: "lower_case"
   readability-identifier-naming.VariableCase: "lower_case"
+  readability-identifier-naming.MemberCase: "lower_case"
+  # Google: class members get trailing _, struct members don't.
+  # clang-tidy 22 misclassifies all members as either "member" (class + pure-data struct)
+  # or "class member" (struct-with-methods). We need both rulesets:
+  readability-identifier-naming.MemberSuffix: "_"
   readability-identifier-naming.ClassMemberCase: "lower_case"
-  readability-identifier-naming.ClassMemberSuffix: "_"
-  readability-identifier-naming.StructMemberCase: "lower_case"
+  readability-identifier-naming.ClassMemberSuffix: ""
   readability-identifier-naming.ConstantCase: "CamelCase"
   readability-identifier-naming.ConstantPrefix: "k"
   readability-identifier-naming.ConstexprVariableCase: "CamelCase"
