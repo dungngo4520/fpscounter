@@ -1,0 +1,47 @@
+# Google C++17 style for header-only library
+WarningsAsErrors: "*"
+Checks: |
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-use-default-member-init,
+  -fuchsia-default-arguments-calls,
+  -fuchsia-default-arguments-declarations,
+  -fuchsia-overloaded-operator,
+  -google-build-using-namespace,
+  -google-readability-todo,
+  -google-runtime-references,
+  -llvmlibc-*,
+  -modernize-use-default-member-init,
+  -modernize-use-trailing-return-type,
+  -readability-convert-member-functions-to-static,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-uppercase-literal-suffix,
+CheckOptions:
+  readability-identifier-naming.ClassCase: "CamelCase"
+  readability-identifier-naming.StructCase: "CamelCase"
+  readability-identifier-naming.EnumCase: "CamelCase"
+  readability-identifier-naming.FunctionCase: "CamelCase"
+  readability-identifier-naming.ParameterCase: "lower_case"
+  readability-identifier-naming.VariableCase: "lower_case"
+  readability-identifier-naming.MemberCase: "lower_case"
+  readability-identifier-naming.MemberSuffix: "_"
+  readability-identifier-naming.ConstantCase: "CamelCase"
+  readability-identifier-naming.ConstantPrefix: "k"
+  readability-identifier-naming.ConstexprVariableCase: "CamelCase"
+  readability-identifier-naming.ConstexprVariablePrefix: "k"
+  readability-identifier-naming.NamespaceCase: "lower_case"
+  readability-identifier-naming.TemplateParameterCase: "CamelCase"
+  readability-identifier-naming.TemplateTemplateParameterCase: "CamelCase"
+  readability-identifier-naming.MacroDefinitionCase: "UPPER_CASE"
+  readability-identifier-naming.EnumConstantCase: "CamelCase"
