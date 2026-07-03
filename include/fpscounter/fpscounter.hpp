@@ -34,9 +34,11 @@ template <typename Clock>
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 FPSCounter<Clock>::FPSCounter(double time_constant, double min_dt,
                               double max_dt) noexcept
-    : inv_time_constant_(1.0 / std::max(time_constant, 1e-9)),
-      min_dt_(std::max(min_dt, 0.0)),
-      max_dt_(max_dt),
+    : inv_time_constant_(
+          1.0 /
+          std::max(std::isfinite(time_constant) ? time_constant : 0.1, 1e-9)),
+      min_dt_(std::isfinite(min_dt) ? std::max(min_dt, 0.0) : 1e-9),
+      max_dt_(std::isfinite(max_dt) ? max_dt : 0.1),
       avg_dt_(min_dt_),
       last_time_(Clock::now()),
       first_frame_(true) {

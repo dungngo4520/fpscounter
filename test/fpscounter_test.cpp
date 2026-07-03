@@ -313,6 +313,57 @@ TEST_F(FakeClockTest, MaxDtClampedToGeMinDt) {
   EXPECT_DOUBLE_EQ(counter.FrameTime(), 0.0);
 }
 
+static void ConvergesTo60WithDefaultTc(FC counter) {
+  int const kFrames =
+      ConvergenceBudget(std::chrono::nanoseconds(16'666'667), 0.1, 0.005);
+  (void)counter.Update();
+  for (int i = 0; i < kFrames; ++i) {
+    (void)counter.Update();
+  }
+  EXPECT_NEAR(counter.Fps(), 60.0, 0.5);
+}
+
+TEST_F(FakeClockTest, NanTimeConstantFallsBackToClamp) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(FC(std::numeric_limits<double>::quiet_NaN()));
+}
+
+TEST_F(FakeClockTest, InfTimeConstantFallsBackToClamp) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(FC(std::numeric_limits<double>::infinity()));
+}
+
+TEST_F(FakeClockTest, NanMinDtFallsBackToDefault) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(FC(0.1, std::numeric_limits<double>::quiet_NaN()));
+}
+
+TEST_F(FakeClockTest, NanMaxDtFallsBackToDefault) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(
+      FC(0.1, 1e-9, std::numeric_limits<double>::quiet_NaN()));
+}
+
+TEST_F(FakeClockTest, InfMinDtFallsBackToDefault) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(FC(0.1, std::numeric_limits<double>::infinity()));
+}
+
+TEST_F(FakeClockTest, InfMaxDtFallsBackToDefault) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  ConvergesTo60WithDefaultTc(
+      FC(0.1, 1e-9, std::numeric_limits<double>::infinity()));
+}
+
+TEST_F(FakeClockTest, MinDtZeroProducesFiniteFps) {
+  SetUniformDt(std::chrono::nanoseconds(16'666'667));
+  FC counter(0.1, 0.0, 0.1);
+  (void)counter.Update();
+  double fps = counter.Update();
+  EXPECT_TRUE(std::isfinite(fps));
+  EXPECT_GT(fps, 0.0);
+}
+
 TEST_F(FakeClockTest, FloorGuardKeepsAvgDtAboveMinDt) {
   SetTimes({
       std::chrono::nanoseconds(100),
