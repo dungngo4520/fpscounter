@@ -89,7 +89,8 @@ FetchContent_MakeAvailable(fpscounter)
 target_link_libraries(myapp fpscounter)
 
 # Option B: Copy header
-# Simply copy include/fpscounter/fpscounter.hpp into your project.
+# Copy include/fpscounter/fpscounter.hpp into your project.
+# Requires C++17 (std::clamp, [[nodiscard]]).
 ```
 
 ## Portability
@@ -106,6 +107,17 @@ target_link_libraries(myapp fpscounter)
 | CUDA device code | Not supported | Use `clock64()` for GPU-side timing |
 | Bare-metal/RTOS | Custom clock | Provide a `Clock` implementing `now()` |
 | 32-bit ARM soft-float | Slow `double` | Consider `float` template instantiation |
+
+### Compiler flags
+
+| Flag | Effect |
+|------|--------|
+| `-ffast-math` (GCC/Clang), `/fp:fast` (MSVC) | Breaks IEEE 754 NaN/Inf semantics. `std::isfinite(NaN)` returns `true`, comparisons with NaN produce garbage. The NaN/Inf guards in `Update()` and the constructor become no-ops. A compile-time warning is emitted. **Safe to ignore** if your clock never returns NaN/Inf (true for all standard `<chrono>` clocks). |
+| `-fno-exceptions` | Compatible. No exceptions are used. |
+| `-fno-rtti` | Compatible. No RTTI is used. |
+| `-nostdlib` | Not compatible. Requires `<chrono>`, `<cmath>`, `<algorithm>`. |
+| `-std=c++14` or older | Not compatible. Requires C++17 (`std::clamp`, `[[nodiscard]]`). |
+| `-mno-sse` (x86, 32-bit) | Compatible. Falls back to x87 FPU for `double`. Slightly slower but correct. |
 
 ## Clock Requirements
 

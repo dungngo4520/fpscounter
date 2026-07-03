@@ -5,6 +5,32 @@
 #include <chrono>
 #include <cmath>
 
+// ── Fast-math detection ──────────────────────────────────────────────────────
+// -ffast-math (GCC/Clang), -ffinite-math-only (GCC/Clang), and /fp:fast (MSVC)
+// break IEEE 754 NaN/Inf semantics: std::isfinite returns true for NaN,
+// comparisons with NaN produce garbage, and 1.0/NaN returns 0 instead of NaN.
+// This disables the NaN/Inf guards in Update() and the constructor.
+// Safe to ignore if your clock never returns NaN/Inf (true for all standard
+// <chrono> clocks).
+#if defined(__FAST_MATH__) ||                                  \
+    (defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__) || \
+    defined(_M_FP_FAST)
+#if defined(_MSC_VER)
+#pragma message( \
+    "fpscounter: /fp:fast detected -- NaN/Inf guards disabled. Safe if clock never returns NaN/Inf. See README.")
+#else
+#warning \
+    "fpscounter: -ffast-math detected -- NaN/Inf guards disabled. Safe if clock never returns NaN/Inf. See README."
+#endif
+#endif
+
+// Suppress clang's redundant -Wnan-infinity-disabled for our std::isfinite calls.
+// Our custom #warning above already explains the situation better.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnan-infinity-disabled"
+#endif
+
 namespace fpscounter {
 
 template <typename Clock = std::chrono::steady_clock>
@@ -92,5 +118,9 @@ void FPSCounter<Clock>::Reset() noexcept {
 }
 
 }  // namespace fpscounter
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif  // FPSCOUNTER_FPSCOUNTER_HPP
